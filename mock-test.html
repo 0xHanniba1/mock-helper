@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mock Helper 测试页面</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: white;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    
+    .card h2 {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+    
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+    
+    .result-box {
+      background: #1e1e1e;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 13px;
+      color: #d4d4d4;
+      max-height: 300px;
+      overflow: auto;
+    }
+    
+    .result-box .success {
+      color: #4ec9b0;
+    }
+    
+    .result-box .error {
+      color: #f14c4c;
+    }
+    
+    .result-box .info {
+      color: #569cd6;
+    }
+    
+    .result-box .url {
+      color: #ce9178;
+    }
+    
+    .api-list {
+      display: grid;
+      gap: 10px;
+    }
+    
+    .api-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    
+    .api-item code {
+      font-family: monospace;
+      background: #e9ecef;
+      padding: 4px 8px;
+      border-radius: 4px;
+      color: #667eea;
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .status.mock {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .status.real {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .instructions {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+    
+    .instructions h3 {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 12px;
+    }
+    
+    .instructions ol {
+      padding-left: 20px;
+      color: #555;
+      line-height: 1.8;
+    }
+    
+    .instructions code {
+      background: #e9ecef;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    
+    .mock-example {
+      background: #282c34;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 12px;
+      font-family: monospace;
+      font-size: 12px;
+      color: #abb2bf;
+      white-space: pre;
+      overflow-x: auto;
+    }
+    
+    .mock-example .key {
+      color: #e06c75;
+    }
+    
+    .mock-example .string {
+      color: #98c379;
+    }
+    
+    .mock-example .number {
+      color: #d19a66;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎭 Mock Helper 测试页面</h1>
+    
+    <!-- 测试区域 -->
+    <div class="card">
+      <h2>📡 API 请求测试</h2>
+      <p style="color: #666; margin-bottom: 16px;">点击按钮发送请求，观察 Mock 前后的区别</p>
+      
+      <div class="api-list">
+        <div class="api-item">
+          <div>
+            <code>GET /api/user/info</code>
+            <span style="color: #999; margin-left: 8px;">获取用户信息</span>
+          </div>
+          <button class="btn btn-primary" onclick="testApi('/api/user/info')">发送请求</button>
+        </div>
+        
+        <div class="api-item">
+          <div>
+            <code>GET /api/products</code>
+            <span style="color: #999; margin-left: 8px;">获取商品列表</span>
+          </div>
+          <button class="btn btn-primary" onclick="testApi('/api/products')">发送请求</button>
+        </div>
+        
+        <div class="api-item">
+          <div>
+            <code>POST /api/order/create</code>
+            <span style="color: #999; margin-left: 8px;">创建订单</span>
+          </div>
+          <button class="btn btn-primary" onclick="testApi('/api/order/create', 'POST')">发送请求</button>
+        </div>
+      </div>
+      
+      <div class="result-box" id="resultBox">
+        <span class="info">// 点击上方按钮发送请求，结果会显示在这里</span>
+      </div>
+    </div>
+    
+    <!-- XHR 测试 -->
+    <div class="card">
+      <h2>🔄 XMLHttpRequest 测试</h2>
+      <p style="color: #666; margin-bottom: 16px;">测试 XHR 请求是否也能被 Mock</p>
+      
+      <button class="btn btn-secondary" onclick="testXHR('/api/user/info')">
+        用 XHR 请求 /api/user/info
+      </button>
+      
+      <div class="result-box" id="xhrResultBox">
+        <span class="info">// XHR 请求结果</span>
+      </div>
+    </div>
+    
+    <!-- Mock 状态检查 -->
+    <div class="card">
+      <h2>🔍 Mock 状态检查</h2>
+      <button class="btn btn-secondary" onclick="checkMockStatus()">检查 Mock Helper 状态</button>
+      <div class="result-box" id="statusBox">
+        <span class="info">// 点击检查插件是否正常工作</span>
+      </div>
+    </div>
+    
+    <!-- 使用说明 -->
+    <div class="card">
+      <h2>📖 测试步骤</h2>
+      
+      <div class="instructions">
+        <h3>第一步：先测试原始请求</h3>
+        <ol>
+          <li>点击上方「发送请求」按钮</li>
+          <li>你会看到请求失败（因为这些 API 不存在）</li>
+        </ol>
+      </div>
+      
+      <div class="instructions">
+        <h3>第二步：添加 Mock 规则</h3>
+        <ol>
+          <li>点击浏览器右上角的 <strong>Mock Helper</strong> 图标</li>
+          <li>点击「+ 添加 Mock 规则」</li>
+          <li>填写以下内容：</li>
+        </ol>
+        
+        <div class="mock-example"><span class="key">URL 规则:</span> <span class="string">/api/user/info</span>
+
+<span class="key">状态码:</span> <span class="number">200</span>
+
+<span class="key">延迟:</span> <span class="number">500</span>  <span style="color: #666;">// 模拟网络延迟</span>
+
+<span class="key">响应内容:</span>
+{
+  <span class="string">"code"</span>: <span class="number">0</span>,
+  <span class="string">"message"</span>: <span class="string">"success"</span>,
+  <span class="string">"data"</span>: {
+    <span class="string">"id"</span>: <span class="number">1001</span>,
+    <span class="string">"name"</span>: <span class="string">"Mock 用户"</span>,
+    <span class="string">"email"</span>: <span class="string">"mock@test.com"</span>,
+    <span class="string">"vip"</span>: <span class="number">true</span>
+  }
+}</div>
+      </div>
+      
+      <div class="instructions">
+        <h3>第三步：验证 Mock 效果</h3>
+        <ol>
+          <li>保存规则后，再次点击「发送请求」</li>
+          <li>你会看到返回了你设置的 Mock 数据 ✅</li>
+          <li>注意观察 500ms 的延迟效果</li>
+        </ol>
+      </div>
+      
+      <div class="instructions">
+        <h3>第四步：测试通配符</h3>
+        <ol>
+          <li>添加规则: <code>/api/*</code></li>
+          <li>这会匹配所有 <code>/api/</code> 开头的请求</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const resultBox = document.getElementById('resultBox');
+    const xhrResultBox = document.getElementById('xhrResultBox');
+    const statusBox = document.getElementById('statusBox');
+    
+    function log(box, message, type = '') {
+      const time = new Date().toLocaleTimeString();
+      box.innerHTML += `\n<span class="${type}">[${time}] ${message}</span>`;
+      box.scrollTop = box.scrollHeight;
+    }
+    
+    function clearLog(box) {
+      box.innerHTML = '';
+    }
+    
+    // Fetch 测试
+    async function testApi(url, method = 'GET') {
+      clearLog(resultBox);
+      log(resultBox, `发送 ${method} 请求...`, 'info');
+      log(resultBox, `URL: ${url}`, 'url');
+      
+      const startTime = Date.now();
+      
+      try {
+        const response = await fetch(url, { method });
+        const elapsed = Date.now() - startTime;
+        
+        // 检查是否被 Mock
+        const isMocked = response.headers.get('X-Mock-Helper') === 'true';
+        
+        if (isMocked) {
+          log(resultBox, `✅ 请求被 Mock 拦截! (耗时 ${elapsed}ms)`, 'success');
+        } else {
+          log(resultBox, `📡 真实请求返回 (耗时 ${elapsed}ms)`, 'info');
+        }
+        
+        log(resultBox, `状态码: ${response.status}`, 'info');
+        
+        const text = await response.text();
+        try {
+          const json = JSON.parse(text);
+          log(resultBox, `响应内容:`, 'info');
+          log(resultBox, JSON.stringify(json, null, 2), '');
+        } catch {
+          log(resultBox, `响应内容: ${text.substring(0, 200)}...`, '');
+        }
+        
+      } catch (error) {
+        log(resultBox, `❌ 请求失败: ${error.message}`, 'error');
+        log(resultBox, `提示: 这是正常的，因为这个 API 不存在`, 'info');
+        log(resultBox, `请在 Mock Helper 中添加规则后重试`, 'info');
+      }
+    }
+    
+    // XHR 测试
+    function testXHR(url) {
+      clearLog(xhrResultBox);
+      log(xhrResultBox, `发送 XHR 请求: ${url}`, 'info');
+      
+      const startTime = Date.now();
+      const xhr = new XMLHttpRequest();
+      
+      xhr.onload = function() {
+        const elapsed = Date.now() - startTime;
+        log(xhrResultBox, `✅ 请求完成 (耗时 ${elapsed}ms)`, 'success');
+        log(xhrResultBox, `状态码: ${xhr.status}`, 'info');
+        
+        try {
+          const json = JSON.parse(xhr.responseText);
+          log(xhrResultBox, JSON.stringify(json, null, 2), '');
+        } catch {
+          log(xhrResultBox, xhr.responseText.substring(0, 200), '');
+        }
+      };
+      
+      xhr.onerror = function() {
+        log(xhrResultBox, `❌ XHR 请求失败`, 'error');
+      };
+      
+      xhr.open('GET', url);
+      xhr.send();
+    }
+    
+    // 检查 Mock 状态
+    function checkMockStatus() {
+      clearLog(statusBox);
+      
+      if (window.__mockHelper) {
+        log(statusBox, `✅ Mock Helper 已加载`, 'success');
+        log(statusBox, `启用状态: ${window.__mockHelper.isEnabled()}`, 'info');
+        
+        const rules = window.__mockHelper.getRules();
+        const ruleCount = Object.keys(rules).length;
+        log(statusBox, `规则数量: ${ruleCount}`, 'info');
+        
+        if (ruleCount > 0) {
+          log(statusBox, `当前规则:`, 'info');
+          for (const [url, rule] of Object.entries(rules)) {
+            log(statusBox, `  - ${url} (${rule.status || 200})`, '');
+          }
+        }
+      } else {
+        log(statusBox, `❌ Mock Helper 未加载`, 'error');
+        log(statusBox, `请确认:`, 'info');
+        log(statusBox, `  1. 插件已安装并启用`, '');
+        log(statusBox, `  2. 刷新此页面`, '');
+      }
+    }
+    
+    // 页面加载后自动检查
+    setTimeout(checkMockStatus, 500);
+  </script>
+</body>
+</html>
